@@ -304,4 +304,31 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
         }
     }
+
+    // TODO: Step 3.2, add check for devices with Android 10.
+    private val runningQOrLater =
+        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
+
+    val backgroundPermissionApproved =
+        if (runningQOrLater) {
+            ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+
+    val permissionRequests = arrayListOf(Manifest.permission.ACCESS_FINE_LOCATION)
+
+    var foregroundAndBackgroundLocationApproved =
+        grantResults[0] == PackageManager.PERMISSION_GRANTED
+
+    if (runningQOrLater) {
+        foregroundAndBackgroundLocationApproved =
+            foregroundAndBackgroundLocationApproved &&
+                    (grantResults[1] == PackageManager.PERMISSION_GRANTED)
+    }
+
+    foregroundAndBackgroundLocationApproved ->
+    startForegroundAndBackgroundLocation()
 }
